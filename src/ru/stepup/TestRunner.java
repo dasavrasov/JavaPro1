@@ -69,11 +69,7 @@ public class TestRunner {
         Arrays.sort(actualTests, Comparator.comparingInt(m -> m.getAnnotation(Test.class).priority()));
 
         for (Method test : actualTests) {
-            try {
-                test.invoke(instance);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            test.invoke(instance);
         }
 
         if (afterSuite != null) {
