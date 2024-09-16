@@ -18,7 +18,7 @@ public class Reflection1 {
     }
 
     @BeforeSuite
-    public static void static1() {
+    public void static1() {
         System.out.println("Run static1");
     }
     @AfterSuite

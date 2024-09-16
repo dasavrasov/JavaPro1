@@ -1,26 +1,19 @@
 package ru.stepup;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TestRunner {
-    public static void runTests(Class c){
+    public static void runTests(Class c) throws Exception{
         Class<?> clazz = null;
-        try {
-            clazz = Class.forName(c.getName());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        clazz = Class.forName(c.getName());
 
         Object instance;
-        try {
-            instance = c.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        instance = c.getDeclaredConstructor().newInstance();
 
         Method[] methods = clazz.getDeclaredMethods();
 
@@ -33,9 +26,11 @@ public class TestRunner {
         csvTests.clear();
         for (Method method : methods) {
             if (method.isAnnotationPresent(BeforeSuite.class)) {
+                if (!Modifier.isStatic(method.getModifiers())) throw new RuntimeException("Метод помеченный @BeforeSuite должен быть статическим!");
                 if (beforeSuite != null) throw new RuntimeException("Методов помеченных @BeforeSuite больше одного!");
                 beforeSuite = method;
             } else if (method.isAnnotationPresent(AfterSuite.class)) {
+                if (!Modifier.isStatic(method.getModifiers())) throw new RuntimeException("Метод помеченный @AfterSuite должен быть статическим!");
                 if (afterSuite != null) throw new RuntimeException("\"Методов помеченных  @AfterSuite  больше одного!");
                 afterSuite = method;
             } else if (method.isAnnotationPresent(Test.class)) {
@@ -100,6 +95,11 @@ public class TestRunner {
     }
 
     public static void main(String[] args) {
-        runTests(Reflection1.class);
+
+        try {
+            runTests(Reflection1.class);
+        } catch (java.lang.Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
